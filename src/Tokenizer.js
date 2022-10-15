@@ -1,4 +1,23 @@
 /**
+ * Spec
+ */
+const Spec = [
+    // Whitespaces
+    [/^\s+/, null],
+
+    // Comments
+    [/^\/\/.*/, null],
+    [/^\/\*[\s\S]*?\*\//, null],
+
+    // Number
+    [/^\d+/, 'NUMBER'],
+
+    // String
+    [/^"[^"]*"/, 'STRING'],
+    [/^'[^']*'/, 'STRING'],
+];
+
+/**
  * Extracts tokens from the string.
  */
 class Tokenizer {
@@ -26,50 +45,34 @@ class Tokenizer {
 
         const string = this._string.slice(this._cursor);
 
-        // Numbers
-        if (!Number.isNaN(Number(string[0]))) {
-            let number = '';
-
-            while (!Number.isNaN(Number(string[this._cursor]))) {
-                number += string[this._cursor++];
+        for (const [regex, tokenType] of Spec) {
+            const tokenValue = this._match(regex, string);
+            if (tokenValue == null) {
+                continue;
             }
+            if (tokenType == null) {
+                // Skipping this token (e.g. whitespace)
+                return this.getNextToken();
+            }
+
             return {
-                type: 'NUMBER',
-                value: number
+                type:  tokenType,
+                value: tokenValue
             };
         }
 
-        // Strings
-        if (string[0] === '"') {
-            let str = '';
-            do {
-                if (this.isEOF()) {
-                    throw new SyntaxError(`Unexpected end of input "${str}"`);
-                }
-                str += string[this._cursor++];
-            } while (string[this._cursor] !== '"');
-            str += this._cursor++; // skip closing '"'
-            return {
-                type: 'STRING',
-                value: str
-            };
-        } else if (string[0] === "'") {
-            let str = '';
-            do {
-                if (this.isEOF()) {
-                    throw new SyntaxError(`Unexpected end of input "${str}"`);
-                }
-                str += string[this._cursor++];
-            } while (string[this._cursor] !== "'");
-            str += this._cursor++; // skip closing '"'
-            return {
-                type: 'STRING',
-                value: str
-            };
-        }
-
-        return null;
+        throw new SyntaxError(`Unexpected token: "${string}"`);
     }
+
+    _match(regex, string) {
+        let matched = regex.exec(string);
+        if (!matched) {
+            return null;
+        }
+
+        this._cursor += matched[0].length;
+        return matched[0];
+    } 
 }
 
 module.exports = {
