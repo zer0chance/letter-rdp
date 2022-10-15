@@ -1,10 +1,83 @@
+//------------------------------------------
+// Default AST factory
+const DefaultFactory = {
+    Program(body) {
+        return {
+            type: 'Program',
+            body
+        };
+    },
+
+    EmptyStatement() { 
+        return {
+            type: 'EmptyStatement'
+        };
+    },
+
+    BlockStatement(body) {
+        return {
+            type: 'BlockStatement',
+            body
+        };
+    },
+
+    ExpressionStatement(expression) {
+        return {
+            type: 'ExpressionStatement',
+            expression
+        };
+    },
+
+    NumericLiteral(value) {
+        return {
+            type: 'NumericLiteral',
+            value: Number(value)
+        };
+    },
+
+    StringLiteral(value) {
+        return {
+            type: 'StringLiteral',
+            value: value.slice(1, -1)
+        };
+    }
+};
+
+//------------------------------------------
+// SExpression AST factory
+const SExpressionFactory = {
+    Program(body) {
+        return ['begin', body];
+    },
+
+    EmptyStatement() { },
+
+    BlockStatement(body) {
+        return ['begin', body];
+    },
+
+    ExpressionStatement(expression) {
+        return expression;
+    },
+
+    NumericLiteral(value) {
+        return Number(value);
+    },
+
+    StringLiteral(value) {
+        return value;
+    }
+}
+
+const AST_MODE = 'default';
+
+const factory = AST_MODE === 'default' ? DefaultFactory : SExpressionFactory;
+
+const {Tokenizer} = require('./Tokenizer');
+
 /**
  * Letter recursive-descent parser
  */
-
-const { BlockList } = require('net');
-const {Tokenizer} = require('./Tokenizer');
-
 class Parser {
     constructor() {
         this._string = '';
@@ -32,10 +105,7 @@ class Parser {
      *   ;
      */
     Program() {
-        return {
-            type: 'Program',
-            body: this.StatementList()
-        };
+        return factory.Program(this.StatementList());
     }
 
     /**
@@ -78,10 +148,7 @@ class Parser {
      */
     EmptyStatement() {
         this._eat(';');
-
-        return {
-            type: 'EmptyStatement'
-        };
+        return factory.EmptyStatement();
     }
 
     /**
@@ -95,10 +162,7 @@ class Parser {
         const body = this._lookahead.type !== '}' ? this.StatementList(/* stop lookahead */ '}') : [];
         this._eat('}');
 
-        return {
-            type: 'BlockStatement',
-            body
-        };
+        return factory.BlockStatement(body);
     }
 
     /**
@@ -106,13 +170,10 @@ class Parser {
      *   : Expression ';'
      *   ;
      */
-     ExpressionStatement() {
+    ExpressionStatement() {
         const expression = this.Expression();
         this._eat(';');
-        return {
-            type: 'ExpressionStatement',
-            expression
-        };
+        return factory.ExpressionStatement(expression);
     }
 
     /**
@@ -147,10 +208,7 @@ class Parser {
      */
     NumericLiteral() {
         const token = this._eat('NUMBER');
-        return {
-            type: 'NumericLiteral',
-            value: Number(token.value)
-        };
+        return factory.NumericLiteral(token.value);
     }
 
     /**
@@ -160,10 +218,7 @@ class Parser {
      */
     StringLiteral() {
         const token = this._eat('STRING');
-        return {
-            type: 'StringLiteral',
-            value: token.value.slice(1, -1)
-        };
+        return factory.StringLiteral(token.value);
     }
 
     /**

@@ -29,7 +29,7 @@ function exec() {
 }
 
 // Manual testing
-// exec();
+exec();
 
 // Test function
 function test(program, expected) {
@@ -37,6 +37,6 @@ function test(program, expected) {
     assert.deepEqual(ast, expected); 
 }
 
-tests.forEach(testRun => testRun(test));
+//tests.forEach(testRun => testRun(test));
 
 console.log('All assertions passed.');
