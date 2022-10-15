@@ -8,6 +8,10 @@ const Spec = [
     // Semicolone
     [/^;/, ';'],
 
+    // Braces
+    [/^{/, '{'],
+    [/^}/, '}'],
+
     // Comments
     [/^\/\/.*/, null],
     [/^\/\*[\s\S]*?\*\//, null],

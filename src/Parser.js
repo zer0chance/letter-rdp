@@ -2,6 +2,7 @@
  * Letter recursive-descent parser
  */
 
+const { BlockList } = require('net');
 const {Tokenizer} = require('./Tokenizer');
 
 class Parser {
@@ -43,9 +44,9 @@ class Parser {
      *   | StatementList Statement
      *   ;
      */
-    StatementList() {
+    StatementList(stopLookahead = null) {
         const statementList = [this.Statement()];
-        while (this._lookahead != null) {
+        while (this._lookahead != null && this._lookahead.type !== stopLookahead) {
             let st = this.Statement();
             statementList.push(st);
         }
@@ -55,10 +56,49 @@ class Parser {
     /**
      * Statement
      *   : ExpressionStatement
+     *   | BlockStatement
+     *   | EmptyStatement
      *   ;
      */
     Statement() {
-        return this.ExpressionStatement();
+        switch(this._lookahead.type) {
+            case (';'):
+                return this.EmptyStatement();
+            case ('{'):
+                return this.BlockStatement();
+            default:
+                return this.ExpressionStatement();
+        }
+    }
+
+    /**
+     * EmptyStatement
+     *   : ';'
+     *   ;
+     */
+    EmptyStatement() {
+        this._eat(';');
+
+        return {
+            type: 'EmptyStatement'
+        };
+    }
+
+    /**
+     * BlockStatement
+     *   : '{' OptStatementList '}'
+     *   ;
+     */
+    BlockStatement() {
+        this._eat('{');
+
+        const body = this._lookahead.type !== '}' ? this.StatementList(/* stop lookahead */ '}') : [];
+        this._eat('}');
+
+        return {
+            type: 'BlockStatement',
+            body
+        };
     }
 
     /**
