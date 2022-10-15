@@ -11,6 +11,8 @@ const Spec = [
     // Braces
     [/^{/, '{'],
     [/^}/, '}'],
+    [/^\(/, '('],
+    [/^\)/, ')'],
 
     // Comments
     [/^\/\/.*/, null],
@@ -22,6 +24,10 @@ const Spec = [
     // String
     [/^"[^"]*"/, 'STRING'],
     [/^'[^']*'/, 'STRING'],
+
+    // Math
+    [/^[+\-]/, 'ADDITIVE_OPERATOR'],
+    [/^[*\/]/, 'MULTIPLICATIVE_OPERATOR'],
 ];
 
 /**

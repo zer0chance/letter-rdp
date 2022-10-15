@@ -5,22 +5,17 @@ const assert = require('assert');
 // List of tests
 const tests = [
     require('./literals_test'),
-    require('./statementlist_test'),
+    require('./statement_list_test'),
     require('./block_test'),
-    require('./emptystatement_test'),
+    require('./empty_statement_test'),
+    require('./binary_expressions_test'),
 ];
 
 const parser = new Parser();
 
 function exec() {
     const program =
-    `  
-    // Comment
-    "hello";
-
-    /* Number
-       statement */
-    42;
+    `(2+2);
 `;
 
     const ast = parser.parse(program);
@@ -37,6 +32,6 @@ function test(program, expected) {
     assert.deepEqual(ast, expected); 
 }
 
-//tests.forEach(testRun => testRun(test));
+tests.forEach(testRun => testRun(test));
 
 console.log('All assertions passed.');

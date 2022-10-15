@@ -182,7 +182,75 @@ class Parser {
      *   ;
      */
     Expression() {
-        return this.Literal();
+        return this.AdditiveExpression();
+    }
+
+    /**
+     * AddiiveExpression
+     *   : MultiplicativeExpression
+     *   | AdditiveExpression ADDITIVE_OPERATOR MultiplicativeExpression
+     *   ;
+     */
+    AdditiveExpression() {
+        return this._BinaryExpression('MultiplicativeExpression', 'ADDITIVE_OPERATOR');
+    }
+
+    /**
+     * MultiplicativeExpression
+     *   : MultiplicativeExpression
+     *   | MultiplicativeExpression MULTIPLICATIVE_OPERATOR PrimaryExpression
+     *   ;
+     */
+    MultiplicativeExpression() {
+        return this._BinaryExpression('PrimaryExpression', 'MULTIPLICATIVE_OPERATOR');
+    }
+
+    /**
+     * Generic binary expression.
+     */
+    _BinaryExpression(builderName, operatorToken) {
+        let left = this[builderName]();
+
+        while (this._lookahead.type === operatorToken) {
+            // Operator *, /
+            const operator = this._eat(operatorToken).value;
+
+            const right = this[builderName]();
+            left = {
+                type: 'BinaryExpression',
+                operator,
+                left,
+                right
+            };
+        }
+
+        return left;
+    }
+    /**
+     * PrimaryExpression
+     *   : Literal
+     *   | ParenthesizedExpression
+     *   ;
+     */
+    PrimaryExpression() {
+        switch(this._lookahead.type) {
+            case '(':
+                return this.ParenthesizedExpression();
+            default:
+                return this.Literal();
+        }
+    }
+
+    /**
+     * ParenthesizedExpression
+     *   : '(' Expression ')'
+     *   ;
+     */
+    ParenthesizedExpression() {
+        this._eat('(');
+        const expression = this.Expression();
+        this._eat(')');
+        return expression;
     }
 
     /**
@@ -198,6 +266,7 @@ class Parser {
             case 'STRING':
                 return this.StringLiteral();
         }
+
         throw new SyntaxError('Unexpected literal!');
     }
 
