@@ -5,6 +5,9 @@ const Spec = [
     // Whitespaces
     [/^\s+/, null],
 
+    // Semicolone
+    [/^;/, ';'],
+
     // Comments
     [/^\/\/.*/, null],
     [/^\/\*[\s\S]*?\*\//, null],

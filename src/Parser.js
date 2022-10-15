@@ -27,14 +27,61 @@ class Parser {
      * Entry point:
      * 
      * Program
-     *   : NumericalLiteral
+     *   : StatementList
      *   ;
      */
     Program() {
         return {
             type: 'Program',
-            body: this.Literal()
+            body: this.StatementList()
         };
+    }
+
+    /**
+     * StatementList
+     *   : Statement
+     *   | StatementList Statement
+     *   ;
+     */
+    StatementList() {
+        const statementList = [this.Statement()];
+        while (this._lookahead != null) {
+            let st = this.Statement();
+            statementList.push(st);
+        }
+        return statementList;
+    }
+
+    /**
+     * Statement
+     *   : ExpressionStatement
+     *   ;
+     */
+    Statement() {
+        return this.ExpressionStatement();
+    }
+
+    /**
+     * ExpressionStatement
+     *   : Expression ';'
+     *   ;
+     */
+     ExpressionStatement() {
+        const expression = this.Expression();
+        this._eat(';');
+        return {
+            type: 'ExpressionStatement',
+            expression
+        };
+    }
+
+    /**
+     * Expression
+     *   : Literal
+     *   ;
+     */
+    Expression() {
+        return this.Literal();
     }
 
     /**
@@ -71,7 +118,7 @@ class Parser {
      *   : STRING
      *   ;
      */
-     StringLiteral() {
+    StringLiteral() {
         const token = this._eat('STRING');
         return {
             type: 'StringLiteral',
