@@ -190,6 +190,7 @@ class Parser {
      */
     FormalParameterList() {
         let params = [];
+        // TODO: implement default values
         do {
             params.push(this.Identifier());
         }
@@ -203,7 +204,7 @@ class Parser {
      *   | 'return' OptExpression
      *   ;
      */
-     ReturnStatement() {
+    ReturnStatement() {
         this._eat('return');
 
         const argument = this._lookahead.type !== ';' ?
@@ -488,7 +489,8 @@ class Parser {
     }
 
     _checkValidAssignmentTarget(target) {
-        if (target.type === 'Identifier') return target;
+        if (target.type === 'Identifier' || target.type === 'MemberExpression')
+            return target;
         throw new SyntaxError(`Invalid left hand side expression: ${target.value}`);
     }
 
@@ -654,11 +656,47 @@ class Parser {
 
     /**
      * LeftHandSideExpression
-     *   : PrimaryExpression
+     *   : MemberExpression
      *   ;
      */
     LeftHandSideExpression() {
-        return this.PrimaryExpression();
+        return this.MemberExpression();
+    }
+
+    /**
+     * MemberExpression
+     *   : PrimaryExpression
+     *   | MemberExpression '.' Identifier
+     *   | MemberExpression '[' Expression ']'
+     *   ; 
+     */
+    MemberExpression() {
+        let object = this.PrimaryExpression();
+
+        while (this._lookahead.type === '.' || this._lookahead.type === '[') {
+            if (this._lookahead.type === '.') {
+                this._eat('.');
+                const property = this.Identifier();
+                object = {
+                    type: 'MemberExpression',
+                    computed: false,
+                    object,
+                    property
+                };
+            } else {
+                this._eat('[');
+                const property = this.Expression();
+                this._eat(']');
+                object = {
+                    type: 'MemberExpression',
+                    computed: true,
+                    object,
+                    property
+                };
+            }
+        }
+
+        return object;
     }
 
     /**

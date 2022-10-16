@@ -20,6 +20,7 @@ const tests = [
     require('./do_while_test'),
     require('./for_test'),
     require('./functions_test'),
+    require('./member_test'),
 ];
 
 const parser = new Parser();
@@ -27,9 +28,7 @@ const parser = new Parser();
 function exec() {
     const program =
     `
-    def square(x) {
-        return x * x;
-    }
+    foo(x); 
     `;
 
     const ast = parser.parse(program);
