@@ -21,6 +21,7 @@ const tests = [
     require('./for_test'),
     require('./functions_test'),
     require('./member_test'),
+    require('./class_test'),
 ];
 
 const parser = new Parser();
@@ -28,7 +29,15 @@ const parser = new Parser();
 function exec() {
     const program =
     `
-    foo(x); 
+    class Point {
+        def constructor(x, y) {
+          this.x = x;
+          this.y = y;
+        }
+        def calc() {
+          return this.x + this.y;
+        }
+    }
     `;
 
     const ast = parser.parse(program);
