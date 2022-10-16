@@ -17,17 +17,16 @@ const Spec = [
     [/^\/\/.*/, null],
     [/^\/\*[\s\S]*?\*\//, null],
 
-    // Assignment
-    [/^=/, 'SIMPLE_ASSIGN'],
-    [/^[+\-\*\/\%]=/, 'COMPLEX_ASSIGN'],
-
     // Number
     [/^\d+/, 'NUMBER'],
 
     // Keyword
-    [/^\blet\b/,  'let'],
-    [/^\bif\b/,   'if'],
-    [/^\belse\b/, 'else'],
+    [/^\blet\b/,   'let'  ],
+    [/^\bif\b/,    'if'   ],
+    [/^\belse\b/,  'else' ],
+    [/^\btrue\b/,  'true' ],
+    [/^\bfalse\b/, 'false'],
+    [/^\bnull\b/,  'null' ],
 
     // Identifiers
     [/^\w+/, 'IDENTIFIER'],
@@ -36,12 +35,23 @@ const Spec = [
     [/^"[^"]*"/, 'STRING'],
     [/^'[^']*'/, 'STRING'],
 
+    // Equality
+    [/^[=!]=/, 'EQUALITY_OPERATOR'],
+
+    // Assignment
+    [/^=/, 'SIMPLE_ASSIGN'],
+    [/^[+\-\*\/\%]=/, 'COMPLEX_ASSIGN'],
+
     // Math
     [/^[+\-]/, 'ADDITIVE_OPERATOR'],
     [/^[*\/]/, 'MULTIPLICATIVE_OPERATOR'],
 
     // Relation
     [/^[><]=?/, 'RELATIONAL_OPERATOR'],
+    
+    // Logical
+    [/^&&/,   'LOGICAL_AND'],
+    [/^\|\|/, 'LOGICAL_OR'],
 ];
 
 /**
