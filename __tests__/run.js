@@ -16,6 +16,9 @@ const tests = [
     require('./equality_test'),
     require('./logical_test'),
     require('./unary_test'),
+    require('./while_test'),
+    require('./do_while_test'),
+    require('./for_test'),
 ];
 
 const parser = new Parser();
@@ -23,7 +26,7 @@ const parser = new Parser();
 function exec() {
     const program =
     `
-    -x + !t;
+    for (;;) {}
     `;
 
     const ast = parser.parse(program);
