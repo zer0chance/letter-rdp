@@ -5,14 +5,13 @@ const Spec = [
     // Whitespaces
     [/^\s+/, null],
 
-    // Semicolone
-    [/^;/, ';'],
-
-    // Braces
-    [/^{/, '{'],
-    [/^}/, '}'],
+    // Symbols, delimiters
+    [/^;/,  ';'],
+    [/^{/,  '{'],
+    [/^}/,  '}'],
     [/^\(/, '('],
     [/^\)/, ')'],
+    [/^,/,  ','],
 
     // Comments
     [/^\/\/.*/, null],
@@ -24,7 +23,10 @@ const Spec = [
 
     // Number
     [/^\d+/, 'NUMBER'],
-    
+
+    // Keyword
+    [/^\blet\b/, 'let'],
+
     // Identifiers
     [/^\w+/, 'IDENTIFIER'],
 

@@ -10,13 +10,15 @@ const tests = [
     require('./empty_statement_test'),
     require('./binary_expressions_test'),
     require('./assignment_test'),
+    require('./variable_test'),
 ];
 
 const parser = new Parser();
 
 function exec() {
     const program =
-    `x += x + x;`;
+    `let x = y = 42;
+    `;
 
     const ast = parser.parse(program);
 
