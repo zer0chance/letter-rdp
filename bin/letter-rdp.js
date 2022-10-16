@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 
+/**
+ * Usage:
+ *   node ./bin/letter-rdp -e "let x = 10; console.log(x);"
+ *   node ./bin/letter-rdp -f code.lt
+ */
+
 'use strict';
 
 const {readFileSync} = require('fs');
