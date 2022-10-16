@@ -51,7 +51,8 @@ const Spec = [
     
     // Logical
     [/^&&/,   'LOGICAL_AND'],
-    [/^\|\|/, 'LOGICAL_OR'],
+    [/^\|\|/, 'LOGICAL_OR' ],
+    [/^!/, 'LOGICAL_NOT'],
 ];
 
 /**
