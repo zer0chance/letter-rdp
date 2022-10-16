@@ -178,11 +178,80 @@ class Parser {
 
     /**
      * Expression
-     *   : Literal
+     *   : AssignmentExpression
      *   ;
      */
     Expression() {
-        return this.AdditiveExpression();
+        return this.AssignmentExpression(); // Lowest precedence first
+    }
+
+    /**
+     * AssignmentExpression
+     *   : AdditiveExpression
+     *   | LeftHandSideExpression AssignmentOperator AssignmentExpression
+     *   ;
+     */
+    AssignmentExpression() {
+        const left = this.AdditiveExpression();
+
+        if (!this._isAssignmentOperator(this._lookahead.type)) {
+            return left;
+        }
+
+        return {
+            type: 'AssignmentExpression',
+            operator: this.AssignmentOperator().value,
+            left: this._checkValidAssignmentTarget(left),
+            right: this.AssignmentExpression()
+        };
+    }
+
+    _isAssignmentOperator(tokenType) {
+        return tokenType === 'SIMPLE_ASSIGN' || tokenType === 'COMPLEX_ASSIGN';
+    }
+
+    _checkValidAssignmentTarget(target) {
+        if (target.type === 'Identifier') return target;
+        throw new SyntaxError(`Invalid left hand side expression: ${target.value}`);
+    }
+
+    /**
+     * AssignmentOperator
+     *   : SIMPLE_ASSIGN
+     *   | COMPLEX_ASSIGN
+     *   ;
+     */
+    AssignmentOperator() {
+        switch (this._lookahead.type) {
+            case 'SIMPLE_ASSIGN':
+                return this._eat('SIMPLE_ASSIGN');
+            case 'COMPLEX_ASSIGN':
+                return this._eat('COMPLEX_ASSIGN');
+            default:
+                throw new SyntaxError(`Invalid assignment operator: ${this._lookahead.type}`);
+        } 
+    }
+
+    /**
+     * LeftHandSideExpression
+     *   : Identifier
+     *   ;
+     */
+    LeftHandSideExpression() {
+        return this.Identifier();
+    }
+
+    /**
+     * Identifier
+     *   : IDENTIFIER
+     *   ;
+     */
+    Identifier() {
+        const name = this._eat('IDENTIFIER').value;
+        return {
+            type: 'Identifier',
+            name
+        };
     }
 
     /**
@@ -226,18 +295,23 @@ class Parser {
 
         return left;
     }
+
     /**
      * PrimaryExpression
      *   : Literal
      *   | ParenthesizedExpression
+     *   | LeftHandSideExpression
      *   ;
      */
     PrimaryExpression() {
+        if (this._isLiteral(this._lookahead.type)) {
+            return this.Literal();
+        }
         switch(this._lookahead.type) {
             case '(':
                 return this.ParenthesizedExpression();
             default:
-                return this.Literal();
+                return this.LeftHandSideExpression();
         }
     }
 
@@ -251,6 +325,10 @@ class Parser {
         const expression = this.Expression();
         this._eat(')');
         return expression;
+    }
+
+    _isLiteral(tokenType) {
+        return tokenType === 'NUMBER' || tokenType === 'STRING';
     }
 
     /**

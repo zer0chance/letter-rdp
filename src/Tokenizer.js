@@ -18,8 +18,15 @@ const Spec = [
     [/^\/\/.*/, null],
     [/^\/\*[\s\S]*?\*\//, null],
 
+    // Assignment
+    [/^=/, 'SIMPLE_ASSIGN'],
+    [/^[+\-\*\/\%]=/, 'COMPLEX_ASSIGN'],
+
     // Number
     [/^\d+/, 'NUMBER'],
+    
+    // Identifiers
+    [/^\w+/, 'IDENTIFIER'],
 
     // String
     [/^"[^"]*"/, 'STRING'],

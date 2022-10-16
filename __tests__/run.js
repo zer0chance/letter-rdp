@@ -9,14 +9,14 @@ const tests = [
     require('./block_test'),
     require('./empty_statement_test'),
     require('./binary_expressions_test'),
+    require('./assignment_test'),
 ];
 
 const parser = new Parser();
 
 function exec() {
     const program =
-    `(2+2);
-`;
+    `x += x + x;`;
 
     const ast = parser.parse(program);
 
