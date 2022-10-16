@@ -11,13 +11,16 @@ const tests = [
     require('./binary_expressions_test'),
     require('./assignment_test'),
     require('./variable_test'),
+    require('./if_test'),
+    require('./relational_test'),
 ];
 
 const parser = new Parser();
 
 function exec() {
     const program =
-    `let x = y = 42;
+    `
+    x + 5 > 10;
     `;
 
     const ast = parser.parse(program);
